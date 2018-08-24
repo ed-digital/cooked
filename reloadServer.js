@@ -12,10 +12,17 @@ class DevRefreshServer {
     this.update = false
   }
   
-  start (port) {
+  start (port, base = 'src') {
+    console.log(base)
     return new Promise(async resolve => {
 
-      chokidar.watch(["source/**/*.js", "source/**/*.sass", "source/**/*.scss", "public_html/all/themes/**/*.php"], {
+      chokidar.watch([
+        `${base}/**/*.js`,
+        `${base}/**/*.sass`,
+        `${base}/**/*.scss`,
+        `${base}/**/*.less`,
+        `${base}/**/*.php`,
+      ], {
         ignored: /(assets-built|dist|node_modules|.git-ignore)/,
         persistent: true,
         ignoreInitial: true

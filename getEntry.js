@@ -11,9 +11,11 @@ function getEntry (dir) {
   const js = filesInDir(base, /\.(j|t)s$/)
 
   if (!styles.length) console.log(chalk.yellow( `No styles found in ${dir}` ))
-  if (!js.length) console.log(chalk.yellow(`No js found in ${dir}`))
+  if (!js.length) {
+    console.error(chalk.red(`No js found in ${dir}... \nGiving up`))
+    process.exit()
+  }
 
-  
 
   function singleEntries(arr){
     return arr.reduce((acc, entry) => {
@@ -42,23 +44,20 @@ module.exports = getEntry
 function jsDeps(js){
   const isDev = global.ENV === 'development'
 
-  if(isDev){
-    console.log(js)
-    const deps = Object.entries(js).reduce((acc, [name, src]) => {
-      acc[name] = prepend(
-        Array.isArray(src) ? src : [src],
-        notEmpty([
-          babelPolyfill,
-          global.ENV === 'development' && ReloadServer.client
-        ])
-      )
-      
-      return acc
-    }, {})
+  const deps = Object.entries(js).reduce((acc, [name, src]) => {
+    acc[name] = prepend(
+      Array.isArray(src) ? src : [src],
+      // Not empty removes ReloadServerClient on prod
+      notEmpty([
+        babelPolyfill,
+        isDev && ReloadServer.client
+      ])
+    )
+    
+    return acc
+  }, {})
 
-    console.log(deps)
-    return deps
-  }
+  return deps
 
   return js
 }

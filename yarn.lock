@@ -4820,6 +4820,10 @@ webpack-cli@^3.1.0:
     v8-compile-cache "^2.0.0"
     yargs "^12.0.1"
 
+webpack-extraneous-file-cleanup-plugin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/webpack-extraneous-file-cleanup-plugin/-/webpack-extraneous-file-cleanup-plugin-2.0.0.tgz#fad563d8e9be1bc5e3a30f1a7f293fe31fc27355"
+
 webpack-log@^1.1.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/webpack-log/-/webpack-log-1.2.0.tgz#a4b34cda6b22b518dbb0ab32e567962d5c72a43d"
@@ -5002,3 +5006,7 @@ yargs@^7.0.0:
     which-module "^1.0.0"
     y18n "^3.2.1"
     yargs-parser "^5.0.0"
+
+yarn@^1.9.4:
+  version "1.9.4"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.9.4.tgz#3b82d8446b652775723900b470d966861976924b"

@@ -1,16 +1,20 @@
+// Webpack modules
 const webpack = require('webpack')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+const ExtraneousFileCleanupPlugin = require('webpack-extraneous-file-cleanup-plugin');
+
+// NPM modules
 const c = require('chalk')
 const path = require('path')
-const babelPolyfill = require.resolve('@babel/polyfill')
 const fs = require('fs')
 const formatWebpack = require('./formatWebpack')
-const ReloadServer = require('./reloadServer')
-const getEntry = require('./getEntry')
+
+// User modules
 const getDirectories = require('./getDirectories')
 
+// Get user config
 let config = requireWithDefault(cwd('config.js'), false)
 if (!config) {
   const OLD_PROJECT = getDirectories('.', /assets-built|assets-src/).length
@@ -28,24 +32,23 @@ if (!config) {
   }
 }
 
-ensureExist([config.from])
-
-const entry = getEntry(cwd(config.from))
-
-
-console.log(entry)
-
-
-const WATCH = 'watch'
-const PROD = 'production'
-const DEV = 'development'  
-const COMPILE = 'compile'
-
-global['ENV'] = DEV
-global['RELOAD'] = true 
-
-
 async function compiler () {
+
+  const WATCH = 'watch'
+  const PROD = 'production'
+  const DEV = 'development'  
+  const COMPILE = 'compile'
+  
+  global['ENV'] = DEV
+  global['RELOAD'] = true 
+  
+  // These modules rely on global variables being set
+  const ReloadServer = require('./reloadServer')
+  const getEntry = require('./getEntry')
+  
+  ensureExist([config.from])
+  
+  const entry = getEntry(cwd(config.from))
  
   // Check following keys are set on global
   needs('ENV', 'RELOAD')
@@ -63,7 +66,7 @@ async function compiler () {
     console.log('Starting reload server')
     port = await ReloadServer.getPort(port)
     console.log(port)
-    await ReloadServer.start(port)
+    await ReloadServer.start(port, config.from)
     console.log(`Reload server running on port ${port}`)
   }
 
@@ -153,7 +156,7 @@ async function compiler () {
           use: [{
               loader: require.resolve('file-loader'),
               options: {
-                  name: '[name].[ext]',
+                  name: 'fonts/[name].[ext]',
                   outputPath: 'fonts/'
               }
           }]
@@ -226,10 +229,12 @@ async function compiler () {
           console.log(c.yellow(`\nBuild took ${t}`))
         },
       }),
-      new webpack.ExtendedAPIPlugin()
+      new webpack.ExtendedAPIPlugin(),
+      new ExtraneousFileCleanupPlugin({
+        extensions: ['.js']
+      })
     ] 
   }
-
 
   // console.log(JSON.stringify(webpackConfig, null, 2))
 
@@ -251,6 +256,8 @@ async function compiler () {
       if(warnings.length){
         console.log(warnings.join('\n\n'))
       }
+
+      if (warnings.length || errors.length) return 
 
       if(RELOAD){
         ReloadServer.doRefresh()
