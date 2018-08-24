@@ -108,19 +108,11 @@ import './reloadStyles.less';
       ws.onerror = function() {
         log('%cError connecting to dev reload server, you may need to refresh manually!', 'color: #da6955')
         disconnected = true
-        
-        let interval = setTimeout(() => {
-          resolve(initSocket())
-        }, 1500)
       }
 
       ws.onclose = function(){
         log('%Lost connection to compiler, trying to reconnect automatically!', 'color: #da6955')
         disconnected = true
-
-        let interval = setTimeout(() => {
-          resolve(initSocket())
-        }, 2000)
       }
     })
   }

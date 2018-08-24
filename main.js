@@ -6,6 +6,7 @@ const PROD = 'production'
 const type = x => ({dev: DEV, prod: PROD}[x])
 
 function main(cmd){
+  // Defaults
   global.RELOAD = true
   global.ENV = DEV
 
